@@ -64,8 +64,19 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedIntersection, setSelectedIntersection] = useState<string>('1');
+  const [selectedCamera, setSelectedCamera] = useState<string>('1');
   const [aiEnabled, setAiEnabled] = useState(true);
-  const [manualTiming, setManualTiming] = useState({ nsGreen: 30, ewGreen: 25 });
+  const [showAiAlert, setShowAiAlert] = useState(false);
+  const [manualTiming, setManualTiming] = useState({ 
+    nsGreen: 30, 
+    ewGreen: 25, 
+    snGreen: 28, 
+    weGreen: 22,
+    nsRed: 35,
+    ewRed: 40,
+    snRed: 37,
+    weRed: 43
+  });
   
   const waitTimeChartRef = useRef<any>(null);
   const efficiencyChartRef = useRef<any>(null);
@@ -767,15 +778,162 @@ function App() {
         </div>
       </div>
 
-      {/* Map */}
-      <div className="mb-6">
-        {renderCityMap()}
+      {/* Selected Camera Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-slate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-white">
+                  {trafficData.intersections[selectedCamera]?.name || 'Select Camera'}
+                </h3>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-slate-300 text-sm">LIVE</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative bg-slate-900 h-96 flex items-center justify-center">
+              {/* Enhanced simulated camera feed */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800"></div>
+              
+              {/* Simulated traffic elements */}
+              <div className="absolute inset-0">
+                {/* Road lines */}
+                <div className="absolute top-1/2 left-0 right-0 h-1 bg-yellow-400 opacity-60"></div>
+                <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-yellow-400 opacity-60"></div>
+                
+                {/* Simulated vehicles */}
+                <div className="absolute top-1/3 left-1/4 w-4 h-2 bg-blue-500 rounded-sm"></div>
+                <div className="absolute top-2/3 right-1/4 w-4 h-2 bg-red-500 rounded-sm"></div>
+                <div className="absolute bottom-1/3 left-1/3 w-2 h-4 bg-green-500 rounded-sm"></div>
+              </div>
+              
+              <div className="relative z-10 text-center">
+                <Camera className="w-16 h-16 text-slate-600 mx-auto mb-3" />
+                <div className="text-slate-400 text-lg font-medium">Camera Feed {selectedCamera}</div>
+                <div className="text-xs text-slate-500 mt-2">
+                  Resolution: 1920x1080 | FPS: 30
+                </div>
+              </div>
+              
+              {/* Enhanced overlay info */}
+              <div className="absolute bottom-4 left-4 space-y-2">
+                <div className="bg-black bg-opacity-70 rounded px-3 py-2">
+                  <div className="text-white text-sm font-medium">
+                    Total Queue: {selectedCamera && trafficData.intersections[selectedCamera] ? 
+                      Object.values(trafficData.intersections[selectedCamera].queues).reduce((a, b) => a + b, 0) : 0} vehicles
+                  </div>
+                </div>
+                <div className="bg-black bg-opacity-70 rounded px-3 py-2">
+                  <div className="text-emerald-400 text-sm">
+                    Status: {selectedCamera && trafficData.intersections[selectedCamera] ? 
+                      trafficData.intersections[selectedCamera].status : 'N/A'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="absolute top-4 right-4 space-y-2">
+                <div className="bg-black bg-opacity-70 rounded px-3 py-2">
+                  <div className="text-blue-400 text-sm font-medium">
+                    AI Optimization: {selectedCamera && trafficData.intersections[selectedCamera] ? 
+                      trafficData.intersections[selectedCamera].aiOptimization : 0}%
+                  </div>
+                </div>
+                <div className="bg-black bg-opacity-70 rounded px-3 py-2">
+                  <div className="text-white text-xs">
+                    {new Date().toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Camera Selection and Details */}
+        <div className="space-y-6">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Camera Selection</h3>
+            <div className="space-y-2">
+              {Object.entries(trafficData.intersections).map(([key, intersection]) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedCamera(key)}
+                  className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    selectedCamera === key 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-sm">Camera {intersection.id}</div>
+                      <div className="text-xs opacity-75">{intersection.name}</div>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full ${
+                      intersection.status === 'optimal' ? 'bg-emerald-500' :
+                      intersection.status === 'congested' ? 'bg-amber-500' :
+                      'bg-red-500'
+                    }`}></div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Selected Camera Details */}
+          {selectedCamera && trafficData.intersections[selectedCamera] && (
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Camera Details</h3>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-700 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">North-South</div>
+                    <div className="text-lg font-semibold text-blue-400">
+                      {trafficData.intersections[selectedCamera].queues.northSouth}
+                    </div>
+                  </div>
+                  <div className="bg-slate-700 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">East-West</div>
+                    <div className="text-lg font-semibold text-emerald-400">
+                      {trafficData.intersections[selectedCamera].queues.eastWest}
+                    </div>
+                  </div>
+                  <div className="bg-slate-700 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">West-East</div>
+                    <div className="text-lg font-semibold text-amber-400">
+                      {trafficData.intersections[selectedCamera].queues.westEast}
+                    </div>
+                  </div>
+                  <div className="bg-slate-700 rounded-lg p-3">
+                    <div className="text-xs text-slate-400 mb-1">South-North</div>
+                    <div className="text-lg font-semibold text-purple-400">
+                      {trafficData.intersections[selectedCamera].queues.southNorth}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Camera Grid */}
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold text-white mb-4">All Camera Feeds</h3>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.entries(trafficData.intersections).map(([key, intersection]) => (
-          <div key={key} className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+          <div 
+            key={key} 
+            className={`bg-slate-800 border rounded-xl overflow-hidden cursor-pointer transition-all ${
+              selectedCamera === key 
+                ? 'border-blue-500 ring-2 ring-blue-500 ring-opacity-50' 
+                : 'border-slate-700 hover:border-slate-600'
+            }`}
+            onClick={() => setSelectedCamera(key)}
+          >
             <div className="p-4 border-b border-slate-700">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-white text-sm">{intersection.name}</h3>
@@ -895,6 +1053,41 @@ function App() {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-white">System Controls</h2>
       
+      {/* AI Alert Modal */}
+      {showAiAlert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center mb-4">
+              <AlertCircle className="w-6 h-6 text-amber-400 mr-3" />
+              <h3 className="text-lg font-semibold text-white">AI Traffic Management</h3>
+            </div>
+            <p className="text-slate-300 mb-6">
+              {aiEnabled 
+                ? 'Are you sure you want to disable AI traffic management? This will switch the system to manual control mode.'
+                : 'Enable AI traffic management? The system will automatically optimize signal timing based on real-time traffic conditions.'
+              }
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setAiEnabled(!aiEnabled);
+                  setShowAiAlert(false);
+                }}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                {aiEnabled ? 'Disable AI' : 'Enable AI'}
+              </button>
+              <button
+                onClick={() => setShowAiAlert(false)}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* AI System Control */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
@@ -909,7 +1102,7 @@ function App() {
                 </div>
               </div>
               <button
-                onClick={() => setAiEnabled(!aiEnabled)}
+                onClick={() => setShowAiAlert(true)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   aiEnabled ? 'bg-blue-600' : 'bg-slate-600'
                 }`}
@@ -944,39 +1137,140 @@ function App() {
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Manual Override</h3>
           
-          <div className="space-y-4">
-            <div className="p-4 bg-slate-700 rounded-lg">
-              <label className="block text-sm font-medium text-white mb-2">
-                North-South Green Time: {manualTiming.nsGreen}s
-              </label>
-              <input
-                type="range"
-                min="15"
-                max="60"
-                value={manualTiming.nsGreen}
-                onChange={(e) => setManualTiming({...manualTiming, nsGreen: parseInt(e.target.value)})}
-                className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer"
-                disabled={aiEnabled}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Green Light Controls */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-emerald-400 mb-3">Green Light Timing</h4>
+              
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  North-South: {manualTiming.nsGreen}s
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="60"
+                  value={manualTiming.nsGreen}
+                  onChange={(e) => setManualTiming({...manualTiming, nsGreen: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  East-West: {manualTiming.ewGreen}s
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="60"
+                  value={manualTiming.ewGreen}
+                  onChange={(e) => setManualTiming({...manualTiming, ewGreen: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  South-North: {manualTiming.snGreen}s
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="60"
+                  value={manualTiming.snGreen}
+                  onChange={(e) => setManualTiming({...manualTiming, snGreen: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  West-East: {manualTiming.weGreen}s
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="60"
+                  value={manualTiming.weGreen}
+                  onChange={(e) => setManualTiming({...manualTiming, weGreen: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
             </div>
 
-            <div className="p-4 bg-slate-700 rounded-lg">
-              <label className="block text-sm font-medium text-white mb-2">
-                East-West Green Time: {manualTiming.ewGreen}s
-              </label>
-              <input
-                type="range"
-                min="15"
-                max="60"
-                value={manualTiming.ewGreen}
-                onChange={(e) => setManualTiming({...manualTiming, ewGreen: parseInt(e.target.value)})}
-                className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer"
-                disabled={aiEnabled}
-              />
+            {/* Red Light Controls */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-red-400 mb-3">Red Light Timing</h4>
+              
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  North-South: {manualTiming.nsRed}s
+                </label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={manualTiming.nsRed}
+                  onChange={(e) => setManualTiming({...manualTiming, nsRed: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  East-West: {manualTiming.ewRed}s
+                </label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={manualTiming.ewRed}
+                  onChange={(e) => setManualTiming({...manualTiming, ewRed: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  South-North: {manualTiming.snRed}s
+                </label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={manualTiming.snRed}
+                  onChange={(e) => setManualTiming({...manualTiming, snRed: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
+
+              <div className="p-3 bg-slate-700 rounded-lg">
+                <label className="block text-xs font-medium text-white mb-2">
+                  West-East: {manualTiming.weRed}s
+                </label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={manualTiming.weRed}
+                  onChange={(e) => setManualTiming({...manualTiming, weRed: parseInt(e.target.value)})}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={aiEnabled}
+                />
+              </div>
             </div>
+          </div>
 
             {aiEnabled && (
-              <div className="p-3 bg-amber-900 bg-opacity-20 border border-amber-500 rounded-lg">
+              <div className="mt-4 p-3 bg-amber-900 bg-opacity-20 border border-amber-500 rounded-lg">
                 <div className="flex items-center">
                   <AlertCircle className="w-4 h-4 text-amber-400 mr-2" />
                   <span className="text-amber-400 text-sm">
@@ -985,7 +1279,6 @@ function App() {
                 </div>
               </div>
             )}
-          </div>
         </div>
 
         {/* Emergency Controls */}
