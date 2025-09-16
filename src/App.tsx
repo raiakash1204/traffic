@@ -628,7 +628,7 @@ function App() {
             <div>
               <p className="text-slate-400 text-sm font-medium">Avg Commute</p>
               <p className="text-2xl font-bold text-white">{trafficData.kpis.avgCommuteTime.toFixed(1)}m</p>
-              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction}%</p>
+              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction.toFixed(2)}%</p>
             </div>
             <Clock className="w-8 h-8 text-blue-400" />
           </div>
