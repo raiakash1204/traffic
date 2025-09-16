@@ -85,9 +85,10 @@ const intersections: Intersection[] = [
 interface MapViewProps {
   selectedIntersection: Intersection | null;
   onIntersectionSelect: (intersection: Intersection) => void;
+  isDarkMode?: boolean;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onIntersectionSelect }) => {
+export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onIntersectionSelect, isDarkMode = true }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-500';
@@ -107,52 +108,52 @@ export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onInters
   };
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6 h-full">
+    <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white border border-gray-200'} rounded-lg p-6 h-full`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white flex items-center">
+        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
           <Navigation className="w-5 h-5 mr-2" />
           Traffic Intersection Map
         </h3>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            <span className="text-gray-300">Active</span>
+            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Active</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-            <span className="text-gray-300">Maintenance</span>
+            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Maintenance</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-gray-500 rounded-full mr-2"></div>
-            <span className="text-gray-300">Inactive</span>
+            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Inactive</span>
           </div>
         </div>
       </div>
       
-      <div className="relative bg-gray-800 rounded-lg h-96 overflow-hidden">
+      <div className={`relative ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg h-96 overflow-hidden`}>
         {/* Grid lines for street layout */}
         <svg className="absolute inset-0 w-full h-full">
           {/* Horizontal streets */}
-          <line x1="0" y1="25%" x2="100%" y2="25%" stroke="#374151" strokeWidth="2" />
-          <line x1="0" y1="45%" x2="100%" y2="45%" stroke="#374151" strokeWidth="2" />
-          <line x1="0" y1="70%" x2="100%" y2="70%" stroke="#374151" strokeWidth="2" />
+          <line x1="0" y1="25%" x2="100%" y2="25%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
+          <line x1="0" y1="45%" x2="100%" y2="45%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
+          <line x1="0" y1="70%" x2="100%" y2="70%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
           
           {/* Vertical streets */}
-          <line x1="25%" y1="0" x2="25%" y2="100%" stroke="#374151" strokeWidth="2" />
-          <line x1="40%" y1="0" x2="40%" y2="100%" stroke="#374151" strokeWidth="2" />
-          <line x1="60%" y1="0" x2="60%" y2="100%" stroke="#374151" strokeWidth="2" />
-          <line x1="75%" y1="0" x2="75%" y2="100%" stroke="#374151" strokeWidth="2" />
+          <line x1="25%" y1="0" x2="25%" y2="100%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
+          <line x1="40%" y1="0" x2="40%" y2="100%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
+          <line x1="60%" y1="0" x2="60%" y2="100%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
+          <line x1="75%" y1="0" x2="75%" y2="100%" stroke={isDarkMode ? "#374151" : "#9CA3AF"} strokeWidth="2" />
         </svg>
         
         {/* Street labels */}
-        <div className="absolute top-2 left-4 text-xs text-gray-400">Main St</div>
-        <div className="absolute top-2 left-1/3 text-xs text-gray-400">Broadway</div>
-        <div className="absolute top-2 left-1/2 text-xs text-gray-400">Oak St</div>
-        <div className="absolute top-2 right-4 text-xs text-gray-400">Pine St</div>
+        <div className={`absolute top-2 left-4 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Main St</div>
+        <div className={`absolute top-2 left-1/3 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Broadway</div>
+        <div className={`absolute top-2 left-1/2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Oak St</div>
+        <div className={`absolute top-2 right-4 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Pine St</div>
         
-        <div className="absolute left-2 top-1/4 text-xs text-gray-400 transform -rotate-90">1st Ave</div>
-        <div className="absolute left-2 top-1/2 text-xs text-gray-400 transform -rotate-90">2nd Ave</div>
-        <div className="absolute left-2 bottom-1/4 text-xs text-gray-400 transform -rotate-90">3rd Ave</div>
+        <div className={`absolute left-2 top-1/4 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transform -rotate-90`}>1st Ave</div>
+        <div className={`absolute left-2 top-1/2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transform -rotate-90`}>2nd Ave</div>
+        <div className={`absolute left-2 bottom-1/4 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transform -rotate-90`}>3rd Ave</div>
         
         {/* Intersection markers */}
         {intersections.map((intersection) => (
@@ -174,7 +175,7 @@ export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onInters
                 </div>
               )}
             </div>
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+            <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900 border border-gray-300'} text-xs px-2 py-1 rounded whitespace-nowrap`}>
               {intersection.name}
             </div>
           </button>
@@ -182,10 +183,10 @@ export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onInters
       </div>
       
       {selectedIntersection && (
-        <div className="mt-4 bg-gray-800 rounded-lg p-4">
-          <h4 className="text-white font-medium mb-2">Selected Intersection</h4>
+        <div className={`mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-4`}>
+          <h4 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium mb-2`}>Selected Intersection</h4>
           <div className="flex items-center justify-between">
-            <span className="text-gray-300">{selectedIntersection.name}</span>
+            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{selectedIntersection.name}</span>
             <div className="flex items-center">
               <div className={`w-2 h-2 ${getStatusBg(selectedIntersection.status)} rounded-full mr-2`}></div>
               <span className={`text-sm capitalize ${getStatusColor(selectedIntersection.status)}`}>
@@ -193,7 +194,7 @@ export const MapView: React.FC<MapViewProps> = ({ selectedIntersection, onInters
               </span>
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">
+          <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
             {selectedIntersection.cameras.length} cameras installed
           </div>
         </div>
