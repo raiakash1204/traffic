@@ -15,7 +15,9 @@ import {
   Menu,
   X,
   Navigation,
-  Zap
+  Zap,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { MapView } from './components/MapView';
 import { CameraList } from './components/CameraList';
@@ -83,6 +85,7 @@ type PageType = 'dashboard' | 'cameras' | 'analytics' | 'controls';
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [selectedIntersection, setSelectedIntersection] = useState<Intersection | null>(null);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [aiEnabled, setAiEnabled] = useState(true);
@@ -404,13 +407,13 @@ function App() {
   ];
 
   const renderNavigation = () => (
-    <nav className="bg-slate-900 border-b border-slate-700">
+    <nav className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
               <Activity className="w-8 h-8 text-blue-400 mr-3" />
-              <h1 className="text-xl font-bold text-white">TrafficAI Control</h1>
+              <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>TrafficAI Control</h1>
             </div>
             <div className="hidden md:ml-10 md:flex md:space-x-8">
               {navigationItems.map((item) => {
@@ -422,7 +425,9 @@ function App() {
                     className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       currentPage === item.id
                         ? 'bg-blue-600 text-white'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                        : isDarkMode 
+                          ? 'text-slate-300 hover:text-white hover:bg-slate-700'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
                     <Icon className="w-4 h-4 mr-2" />
@@ -434,14 +439,27 @@ function App() {
           </div>
           
           <div className="flex items-center">
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className={`p-2 rounded-lg transition-colors mr-4 ${
+                isDarkMode 
+                  ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            
             <div className="flex items-center space-x-3 mr-4">
               <div className={`w-2 h-2 rounded-full ${getStatusColor(trafficData.systemStatus)}`}></div>
-              <span className="text-sm text-slate-300 capitalize">{trafficData.systemStatus}</span>
+              <span className={`text-sm capitalize ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>{trafficData.systemStatus}</span>
             </div>
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-400 hover:text-white p-2"
+                className={`p-2 ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -452,7 +470,7 @@ function App() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-800 border-t border-slate-700">
+        <div className={`md:hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gray-50 border-gray-200'} border-t`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
@@ -466,7 +484,9 @@ function App() {
                   className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                     currentPage === item.id
                       ? 'bg-blue-600 text-white'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                      : isDarkMode
+                        ? 'text-slate-300 hover:text-white hover:bg-slate-700'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
@@ -481,60 +501,60 @@ function App() {
   );
 
   const renderCityMap = (showIntersectionDetails = false) => (
-    <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+    <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} rounded-xl border p-6`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white flex items-center">
+        <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
           <MapPin className="w-5 h-5 mr-2 text-blue-400" />
           City Traffic Network
         </h2>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-emerald-500 mr-2"></div>
-            <span className="text-slate-300">Optimal</span>
+            <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>Optimal</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-amber-500 mr-2"></div>
-            <span className="text-slate-300">Congested</span>
+            <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>Congested</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-            <span className="text-slate-300">Critical</span>
+            <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>Critical</span>
           </div>
         </div>
       </div>
       
-      <div className="relative bg-slate-900 rounded-lg overflow-hidden" style={{ height: '400px' }}>
+      <div className={`relative ${isDarkMode ? 'bg-slate-900' : 'bg-gray-100'} rounded-lg overflow-hidden`} style={{ height: '400px' }}>
         <svg width="100%" height="100%" viewBox="0 0 640 400" className="absolute inset-0">
           {/* City Background */}
-          <rect width="640" height="400" fill="#0F172A" />
+          <rect width="640" height="400" fill={isDarkMode ? "#0F172A" : "#F3F4F6"} />
           
           {/* City Blocks */}
-          <rect x="50" y="50" width="120" height="80" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="200" y="50" width="100" height="60" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="330" y="40" width="140" height="90" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="500" y="60" width="90" height="70" fill="#1E293B" stroke="#334155" strokeWidth="1" />
+          <rect x="50" y="50" width="120" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="200" y="50" width="100" height="60" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="330" y="40" width="140" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="500" y="60" width="90" height="70" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
           
-          <rect x="60" y="160" width="90" height="100" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="180" y="180" width="110" height="80" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="320" y="160" width="130" height="110" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="480" y="170" width="100" height="90" fill="#1E293B" stroke="#334155" strokeWidth="1" />
+          <rect x="60" y="160" width="90" height="100" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="180" y="180" width="110" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="320" y="160" width="130" height="110" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="480" y="170" width="100" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
           
-          <rect x="70" y="290" width="100" height="80" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="200" y="300" width="120" height="70" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="350" y="290" width="110" height="85" fill="#1E293B" stroke="#334155" strokeWidth="1" />
-          <rect x="490" y="280" width="120" height="90" fill="#1E293B" stroke="#334155" strokeWidth="1" />
+          <rect x="70" y="290" width="100" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="200" y="300" width="120" height="70" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="350" y="290" width="110" height="85" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
+          <rect x="490" y="280" width="120" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
           
           {/* Major Roads */}
-          <line x1="0" y1="140" x2="640" y2="140" stroke="#475569" strokeWidth="8" />
-          <line x1="0" y1="280" x2="640" y2="280" stroke="#475569" strokeWidth="8" />
-          <line x1="180" y1="0" x2="180" y2="400" stroke="#475569" strokeWidth="8" />
-          <line x1="320" y1="0" x2="320" y2="400" stroke="#475569" strokeWidth="8" />
-          <line x1="480" y1="0" x2="480" y2="400" stroke="#475569" strokeWidth="8" />
+          <line x1="0" y1="140" x2="640" y2="140" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
+          <line x1="0" y1="280" x2="640" y2="280" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
+          <line x1="180" y1="0" x2="180" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
+          <line x1="320" y1="0" x2="320" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
+          <line x1="480" y1="0" x2="480" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
           
           {/* Secondary Roads */}
-          <line x1="0" y1="220" x2="640" y2="220" stroke="#64748B" strokeWidth="4" />
-          <line x1="380" y1="0" x2="380" y2="400" stroke="#64748B" strokeWidth="4" />
-          <line x1="520" y1="0" x2="520" y2="400" stroke="#64748B" strokeWidth="4" />
+          <line x1="0" y1="220" x2="640" y2="220" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
+          <line x1="380" y1="0" x2="380" y2="400" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
+          <line x1="520" y1="0" x2="520" y2="400" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
           
           {/* Highway */}
           <line x1="0" y1="120" x2="640" y2="120" stroke="#3B82F6" strokeWidth="6" />
@@ -547,7 +567,7 @@ function App() {
                 cy={intersection.coordinates.y}
                 r="12"
                 fill={getIntersectionStatusColor(intersection.status)}
-                stroke="#1E293B"
+                stroke={isDarkMode ? "#1E293B" : "#FFFFFF"}
                 strokeWidth="2"
                 className="cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => setSelectedIntersection(key)}
@@ -563,7 +583,7 @@ function App() {
                 x={intersection.coordinates.x}
                 y={intersection.coordinates.y - 20}
                 textAnchor="middle"
-                fill="#E2E8F0"
+                fill={isDarkMode ? "#E2E8F0" : "#374151"}
                 fontSize="10"
                 fontFamily="Inter"
                 className="pointer-events-none"
@@ -591,13 +611,13 @@ function App() {
         </svg>
         
         {showIntersectionDetails && selectedIntersection && (
-          <div className="absolute top-4 right-4 bg-slate-800 border border-slate-600 rounded-lg p-4 max-w-xs">
-            <h3 className="font-semibold text-white mb-2">
+          <div className={`absolute top-4 right-4 ${isDarkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-gray-300'} border rounded-lg p-4 max-w-xs`}>
+            <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
               {trafficData.intersections[selectedIntersection]?.name}
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-400">Status:</span>
+                <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Status:</span>
                 <span className={`font-medium ${
                   trafficData.intersections[selectedIntersection]?.status === 'optimal' ? 'text-emerald-400' :
                   trafficData.intersections[selectedIntersection]?.status === 'congested' ? 'text-amber-400' :
@@ -607,7 +627,7 @@ function App() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">AI Optimization:</span>
+                <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>AI Optimization:</span>
                 <span className="text-blue-400 font-medium">
                   {trafficData.intersections[selectedIntersection]?.aiOptimization}%
                 </span>
@@ -623,66 +643,66 @@ function App() {
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">Avg Commute</p>
-              <p className="text-2xl font-bold text-white">{trafficData.kpis.avgCommuteTime.toFixed(1)}m</p>
-              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction.toFixed(2)}%</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>Avg Commute</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.avgCommuteTime.toFixed(1)}m</p>
+              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction}%</p>
             </div>
             <Clock className="w-8 h-8 text-blue-400" />
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">Vehicles Today</p>
-              <p className="text-2xl font-bold text-white">{trafficData.kpis.totalVehicles.toLocaleString()}</p>
-              <p className="text-slate-400 text-sm">+2.3% vs yesterday</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>Vehicles Today</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.totalVehicles.toLocaleString()}</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>+2.3% vs yesterday</p>
             </div>
             <Car className="w-8 h-8 text-emerald-400" />
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">Congestion Index</p>
-              <p className="text-2xl font-bold text-white">{trafficData.kpis.congestionIndex.toFixed(1)}/10</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>Congestion Index</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.congestionIndex.toFixed(1)}/10</p>
               <p className="text-amber-400 text-sm">Moderate</p>
             </div>
             <TrendingUp className="w-8 h-8 text-amber-400" />
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">Active Intersections</p>
-              <p className="text-2xl font-bold text-white">{trafficData.kpis.activeIntersections}</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>Active Intersections</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.activeIntersections}</p>
               <p className="text-emerald-400 text-sm">All operational</p>
             </div>
             <Navigation className="w-8 h-8 text-purple-400" />
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">System Uptime</p>
-              <p className="text-2xl font-bold text-white">{trafficData.kpis.systemUptime}%</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>System Uptime</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.systemUptime}%</p>
               <p className="text-emerald-400 text-sm">Excellent</p>
             </div>
             <Zap className="w-8 h-8 text-yellow-400" />
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm font-medium">AI Efficiency</p>
-              <p className="text-2xl font-bold text-white">{trafficData.performance.efficiencyGain}%</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>AI Efficiency</p>
+              <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.performance.efficiencyGain}%</p>
               <p className="text-emerald-400 text-sm">vs traditional</p>
             </div>
             <Activity className="w-8 h-8 text-blue-400" />
@@ -698,14 +718,14 @@ function App() {
         
         <div className="space-y-6">
           {/* Live Intersection Details */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
               Intersection Details
             </h3>
             {selectedIntersection && trafficData.intersections[selectedIntersection] && (
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-white text-sm mb-2">
+                  <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm mb-2`}>
                     {trafficData.intersections[selectedIntersection].name}
                   </h4>
                   <div className="flex items-center space-x-2">
@@ -714,47 +734,47 @@ function App() {
                       trafficData.intersections[selectedIntersection].status === 'congested' ? 'bg-amber-500' :
                       'bg-red-500'
                     }`}></div>
-                    <span className="text-slate-300 text-sm capitalize">
+                    <span className={`${isDarkMode ? 'text-slate-300' : 'text-gray-600'} text-sm capitalize`}>
                       {trafficData.intersections[selectedIntersection].status}
                     </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-slate-700 rounded-lg p-3">
-                    <div className="text-xs text-slate-400 mb-1">North-South</div>
+                  <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg p-3`}>
+                    <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-1`}>North-South</div>
                     <div className="text-lg font-semibold text-blue-400">
                       {trafficData.intersections[selectedIntersection].queues.northSouth}
                     </div>
                   </div>
-                  <div className="bg-slate-700 rounded-lg p-3">
-                    <div className="text-xs text-slate-400 mb-1">East-West</div>
+                  <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg p-3`}>
+                    <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-1`}>East-West</div>
                     <div className="text-lg font-semibold text-emerald-400">
                       {trafficData.intersections[selectedIntersection].queues.eastWest}
                     </div>
                   </div>
-                  <div className="bg-slate-700 rounded-lg p-3">
-                    <div className="text-xs text-slate-400 mb-1">West-East</div>
+                  <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg p-3`}>
+                    <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-1`}>West-East</div>
                     <div className="text-lg font-semibold text-amber-400">
                       {trafficData.intersections[selectedIntersection].queues.westEast}
                     </div>
                   </div>
-                  <div className="bg-slate-700 rounded-lg p-3">
-                    <div className="text-xs text-slate-400 mb-1">South-North</div>
+                  <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg p-3`}>
+                    <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-1`}>South-North</div>
                     <div className="text-lg font-semibold text-purple-400">
                       {trafficData.intersections[selectedIntersection].queues.southNorth}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-slate-700 rounded-lg p-3">
+                <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg p-3`}>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-slate-400">Current Signal</span>
-                    <span className="text-xs text-slate-300">
+                    <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Current Signal</span>
+                    <span className={`text-xs ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                       {trafficData.intersections[selectedIntersection].signalTiming.timeRemaining}s remaining
                     </span>
                   </div>
-                  <div className="text-sm font-medium text-white capitalize">
+                  <div className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} capitalize`}>
                     {trafficData.intersections[selectedIntersection].signalTiming.currentPhase.replace('-', ' ')}
                   </div>
                 </div>
@@ -763,29 +783,29 @@ function App() {
           </div>
 
           {/* Quick Stats */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">System Overview</h3>
+          <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>System Overview</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-slate-400 text-sm">Optimal Intersections</span>
+                <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Optimal Intersections</span>
                 <span className="text-emerald-400 font-medium">
                   {Object.values(trafficData.intersections).filter(i => i.status === 'optimal').length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 text-sm">Congested Intersections</span>
+                <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Congested Intersections</span>
                 <span className="text-amber-400 font-medium">
                   {Object.values(trafficData.intersections).filter(i => i.status === 'congested').length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 text-sm">Critical Intersections</span>
+                <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Critical Intersections</span>
                 <span className="text-red-400 font-medium">
                   {Object.values(trafficData.intersections).filter(i => i.status === 'critical').length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 text-sm">Average AI Optimization</span>
+                <span className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Average AI Optimization</span>
                 <span className="text-blue-400 font-medium">
                   {Math.round(Object.values(trafficData.intersections).reduce((acc, i) => acc + i.aiOptimization, 0) / Object.values(trafficData.intersections).length)}%
                 </span>
@@ -800,10 +820,10 @@ function App() {
   const renderCameras = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Camera Feeds</h2>
+        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Camera Feeds</h2>
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span className="text-slate-300 text-sm">Live</span>
+          <span className={`${isDarkMode ? 'text-slate-300' : 'text-gray-600'} text-sm`}>Live</span>
         </div>
       </div>
 
@@ -838,49 +858,49 @@ function App() {
 
   const renderAnalytics = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">Performance Analytics</h2>
+      <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Performance Analytics</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Wait Time Comparison</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Wait Time Comparison</h3>
           <div className="h-64">
             <canvas ref={waitTimeChartRef}></canvas>
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">AI Efficiency</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>AI Efficiency</h3>
           <div className="h-64">
             <canvas ref={efficiencyChartRef}></canvas>
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Weekly Throughput Improvement</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Weekly Throughput Improvement</h3>
           <div className="h-64">
             <canvas ref={throughputChartRef}></canvas>
           </div>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Performance Metrics</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Performance Metrics</h3>
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
-              <span className="text-slate-300">Average Wait Time Reduction</span>
+            <div className={`flex justify-between items-center p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+              <span className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}>Average Wait Time Reduction</span>
               <span className="text-emerald-400 font-semibold">
                 {((trafficData.performance.fixedWaitTimes[7] - trafficData.performance.aiWaitTimes[7]) / trafficData.performance.fixedWaitTimes[7] * 100).toFixed(1)}%
               </span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
-              <span className="text-slate-300">Throughput Improvement</span>
+            <div className={`flex justify-between items-center p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+              <span className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}>Throughput Improvement</span>
               <span className="text-blue-400 font-semibold">{trafficData.performance.throughputImprovement}%</span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
-              <span className="text-slate-300">Fuel Savings Estimate</span>
+            <div className={`flex justify-between items-center p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+              <span className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}>Fuel Savings Estimate</span>
               <span className="text-emerald-400 font-semibold">2,340L/day</span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
-              <span className="text-slate-300">CO2 Reduction</span>
+            <div className={`flex justify-between items-center p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+              <span className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}>CO2 Reduction</span>
               <span className="text-emerald-400 font-semibold">5.2 tons/day</span>
             </div>
           </div>
@@ -891,17 +911,17 @@ function App() {
 
   const renderControls = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">System Controls</h2>
+      <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>System Controls</h2>
       
       {/* AI Alert Modal */}
       {showAiAlert && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full mx-4">
+          <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6 max-w-md w-full mx-4`}>
             <div className="flex items-center mb-4">
               <AlertCircle className="w-6 h-6 text-amber-400 mr-3" />
-              <h3 className="text-lg font-semibold text-white">AI Traffic Management</h3>
+              <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>AI Traffic Management</h3>
             </div>
-            <p className="text-slate-300 mb-6">
+            <p className={`${isDarkMode ? 'text-slate-300' : 'text-gray-600'} mb-6`}>
               {aiEnabled 
                 ? 'Are you sure you want to disable AI traffic management? This will switch the system to manual control mode.'
                 : 'Enable AI traffic management? The system will automatically optimize signal timing based on real-time traffic conditions.'
@@ -919,7 +939,7 @@ function App() {
               </button>
               <button
                 onClick={() => setShowAiAlert(false)}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                className={`flex-1 ${isDarkMode ? 'bg-slate-600 hover:bg-slate-700' : 'bg-gray-300 hover:bg-gray-400'} ${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium py-2 px-4 rounded-lg transition-colors`}
               >
                 Cancel
               </button>
@@ -930,21 +950,21 @@ function App() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* AI System Control */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">AI System Control</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>AI System Control</h3>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+            <div className={`flex items-center justify-between p-4 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
               <div>
-                <div className="font-medium text-white">AI Traffic Management</div>
-                <div className="text-sm text-slate-400">
+                <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>AI Traffic Management</div>
+                <div className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
                   {aiEnabled ? 'AI is actively managing traffic signals' : 'Manual control is active'}
                 </div>
               </div>
               <button
                 onClick={() => setShowAiAlert(true)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  aiEnabled ? 'bg-blue-600' : 'bg-slate-600'
+                  aiEnabled ? 'bg-blue-600' : isDarkMode ? 'bg-slate-600' : 'bg-gray-300'
                 }`}
               >
                 <span
@@ -955,9 +975,9 @@ function App() {
               </button>
             </div>
 
-            <div className="p-4 bg-slate-700 rounded-lg">
+            <div className={`p-4 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">System Status</span>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>System Status</span>
                 <div className="flex items-center space-x-2">
                   {trafficData.systemStatus === 'active' ? (
                     <CheckCircle className="w-5 h-5 text-emerald-400" />
@@ -966,7 +986,7 @@ function App() {
                   ) : (
                     <AlertCircle className="w-5 h-5 text-red-400" />
                   )}
-                  <span className="text-slate-300 capitalize">{trafficData.systemStatus}</span>
+                  <span className={`${isDarkMode ? 'text-slate-300' : 'text-gray-600'} capitalize`}>{trafficData.systemStatus}</span>
                 </div>
               </div>
             </div>
@@ -974,16 +994,16 @@ function App() {
         </div>
 
         {/* Manual Override */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Manual Override</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Manual Override</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Green Light Controls */}
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-emerald-400 mb-3">Green Light Timing</h4>
               
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   North-South: {manualTiming.nsGreen}s
                 </label>
                 <input
@@ -992,13 +1012,13 @@ function App() {
                   max="60"
                   value={manualTiming.nsGreen}
                   onChange={(e) => setManualTiming({...manualTiming, nsGreen: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   East-West: {manualTiming.ewGreen}s
                 </label>
                 <input
@@ -1007,13 +1027,13 @@ function App() {
                   max="60"
                   value={manualTiming.ewGreen}
                   onChange={(e) => setManualTiming({...manualTiming, ewGreen: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   South-North: {manualTiming.snGreen}s
                 </label>
                 <input
@@ -1022,13 +1042,13 @@ function App() {
                   max="60"
                   value={manualTiming.snGreen}
                   onChange={(e) => setManualTiming({...manualTiming, snGreen: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   West-East: {manualTiming.weGreen}s
                 </label>
                 <input
@@ -1037,7 +1057,7 @@ function App() {
                   max="60"
                   value={manualTiming.weGreen}
                   onChange={(e) => setManualTiming({...manualTiming, weGreen: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
@@ -1047,8 +1067,8 @@ function App() {
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-red-400 mb-3">Red Light Timing</h4>
               
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   North-South: {manualTiming.nsRed}s
                 </label>
                 <input
@@ -1057,13 +1077,13 @@ function App() {
                   max="80"
                   value={manualTiming.nsRed}
                   onChange={(e) => setManualTiming({...manualTiming, nsRed: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   East-West: {manualTiming.ewRed}s
                 </label>
                 <input
@@ -1072,13 +1092,13 @@ function App() {
                   max="80"
                   value={manualTiming.ewRed}
                   onChange={(e) => setManualTiming({...manualTiming, ewRed: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   South-North: {manualTiming.snRed}s
                 </label>
                 <input
@@ -1087,13 +1107,13 @@ function App() {
                   max="80"
                   value={manualTiming.snRed}
                   onChange={(e) => setManualTiming({...manualTiming, snRed: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
 
-              <div className="p-3 bg-slate-700 rounded-lg">
-                <label className="block text-xs font-medium text-white mb-2">
+              <div className={`p-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'} rounded-lg`}>
+                <label className={`block text-xs font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
                   West-East: {manualTiming.weRed}s
                 </label>
                 <input
@@ -1102,7 +1122,7 @@ function App() {
                   max="80"
                   value={manualTiming.weRed}
                   onChange={(e) => setManualTiming({...manualTiming, weRed: parseInt(e.target.value)})}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                  className={`w-full h-2 ${isDarkMode ? 'bg-slate-600' : 'bg-gray-300'} rounded-lg appearance-none cursor-pointer slider`}
                   disabled={aiEnabled}
                 />
               </div>
@@ -1110,10 +1130,10 @@ function App() {
           </div>
 
             {aiEnabled && (
-              <div className="mt-4 p-3 bg-amber-900 bg-opacity-20 border border-amber-500 rounded-lg">
+              <div className={`mt-4 p-3 ${isDarkMode ? 'bg-amber-900 bg-opacity-20' : 'bg-amber-50'} border border-amber-500 rounded-lg`}>
                 <div className="flex items-center">
                   <AlertCircle className="w-4 h-4 text-amber-400 mr-2" />
-                  <span className="text-amber-400 text-sm">
+                  <span className={`${isDarkMode ? 'text-amber-400' : 'text-amber-700'} text-sm`}>
                     Manual controls disabled while AI is active
                   </span>
                 </div>
@@ -1122,8 +1142,8 @@ function App() {
         </div>
 
         {/* Emergency Controls */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Emergency Controls</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Emergency Controls</h3>
           
           <div className="space-y-3">
             <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
@@ -1139,25 +1159,25 @@ function App() {
         </div>
 
         {/* System Information */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">System Information</h3>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>System Information</h3>
           
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-slate-400">Version</span>
-              <span className="text-white">v2.1.4</span>
+              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Version</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>v2.1.4</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Last Update</span>
-              <span className="text-white">2 hours ago</span>
+              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Last Update</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>2 hours ago</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Uptime</span>
+              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Uptime</span>
               <span className="text-emerald-400">99.7%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Active Connections</span>
-              <span className="text-white">12/12</span>
+              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Active Connections</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>12/12</span>
             </div>
           </div>
         </div>
@@ -1181,7 +1201,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
       {renderNavigation()}
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
