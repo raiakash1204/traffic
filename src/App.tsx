@@ -648,7 +648,7 @@ function App() {
             <div>
               <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm font-medium`}>Avg Commute</p>
               <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{trafficData.kpis.avgCommuteTime.toFixed(1)}m</p>
-              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction}%</p>
+              <p className="text-emerald-400 text-sm font-medium">-{trafficData.kpis.commuteReduction.toFixed(2)}%</p>
             </div>
             <Clock className="w-8 h-8 text-blue-400" />
           </div>
