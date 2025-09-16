@@ -99,55 +99,9 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ selectedIntersection, se
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 h-full">
-        {/* Main Camera Feed */}
-        <div className="col-span-2">
-          <div className="bg-gray-800 rounded-lg h-full p-4">
-            {selectedCamera.status === 'online' ? (
-              <div className="h-full bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
-                {/* Simulated traffic elements */}
-                <div className="absolute inset-0">
-                  <div className="absolute top-4 left-4 w-8 h-4 bg-red-500 rounded opacity-80"></div>
-                  <div className="absolute top-4 right-4 w-6 h-3 bg-blue-500 rounded opacity-80"></div>
-                  <div className="absolute bottom-8 left-8 w-10 h-5 bg-yellow-500 rounded opacity-80"></div>
-                  <div className="absolute bottom-4 right-8 w-4 h-8 bg-green-500 rounded opacity-80"></div>
-                  
-                  {/* Traffic light simulation */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-3 h-8 bg-gray-800 rounded-full flex flex-col items-center justify-around py-1">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                      <div className="w-2 h-2 bg-yellow-300 rounded-full opacity-30"></div>
-                      <div className="w-2 h-2 bg-green-400 rounded-full opacity-30"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="text-center text-gray-400 z-10">
-                  <Camera className="w-12 h-12 mx-auto mb-2" />
-                  <div className="text-sm">Live Camera Feed</div>
-                  <div className="text-xs mt-1">{selectedCamera.angle} View • {selectedCamera.type}</div>
-                </div>
-                
-                {/* Timestamp overlay */}
-                <div className="absolute bottom-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                  <Clock className="w-3 h-3 inline mr-1" />
-                  {new Date().toLocaleTimeString()}
-                </div>
-              </div>
-            ) : (
-              <div className="h-full bg-gray-800 rounded-lg flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <AlertTriangle className="w-16 h-16 mx-auto mb-4" />
-                  <p className="text-lg font-medium mb-2">Camera Offline</p>
-                  <p className="text-sm">Unable to connect to camera feed</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
+      <div className="space-y-6 h-full">
         {/* Traffic Analytics */}
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-6">
           <div className="bg-gray-800 rounded-lg p-4">
             <h4 className="text-white font-medium mb-3">Traffic Analytics</h4>
             <div className="space-y-3">
@@ -196,23 +150,69 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ selectedIntersection, se
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Other intersection cameras */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h4 className="text-white font-medium mb-3">Other Cameras</h4>
-            <div className="space-y-2">
-              {selectedIntersection.cameras
-                .filter(cam => cam.id !== selectedCamera.id)
-                .slice(0, 3)
-                .map((camera) => (
-                <div key={camera.id} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">{camera.name}</span>
-                  <div className={`w-2 h-2 rounded-full ${
-                    camera.status === 'online' ? 'bg-green-500' : 'bg-red-500'
-                  }`}></div>
+        {/* Other intersection cameras */}
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h4 className="text-white font-medium mb-3">Other Cameras</h4>
+          <div className="grid grid-cols-3 gap-4">
+            {selectedIntersection.cameras
+              .filter(cam => cam.id !== selectedCamera.id)
+              .map((camera) => (
+              <div key={camera.id} className="flex items-center justify-between text-sm bg-gray-700 p-3 rounded-lg">
+                <span className="text-gray-300">{camera.name}</span>
+                <div className={`w-2 h-2 rounded-full ${
+                  camera.status === 'online' ? 'bg-green-500' : 'bg-red-500'
+                }`}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Camera Feed */}
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h4 className="text-white font-medium mb-4">Live Camera Feed</h4>
+          <div className="bg-gray-800 rounded-lg h-full p-4">
+            {selectedCamera.status === 'online' ? (
+              <div className="h-96 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+                {/* Simulated traffic elements */}
+                <div className="absolute inset-0">
+                  <div className="absolute top-4 left-4 w-8 h-4 bg-red-500 rounded opacity-80"></div>
+                  <div className="absolute top-4 right-4 w-6 h-3 bg-blue-500 rounded opacity-80"></div>
+                  <div className="absolute bottom-8 left-8 w-10 h-5 bg-yellow-500 rounded opacity-80"></div>
+                  <div className="absolute bottom-4 right-8 w-4 h-8 bg-green-500 rounded opacity-80"></div>
+                  
+                  {/* Traffic light simulation */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-3 h-8 bg-gray-800 rounded-full flex flex-col items-center justify-around py-1">
+                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-yellow-300 rounded-full opacity-30"></div>
+                      <div className="w-2 h-2 bg-green-400 rounded-full opacity-30"></div>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+                
+                <div className="text-center text-gray-400 z-10">
+                  <Camera className="w-12 h-12 mx-auto mb-2" />
+                  <div className="text-sm">Live Camera Feed</div>
+                  <div className="text-xs mt-1">{selectedCamera.angle} View • {selectedCamera.type}</div>
+                </div>
+                
+                {/* Timestamp overlay */}
+                <div className="absolute bottom-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                  <Clock className="w-3 h-3 inline mr-1" />
+                  {new Date().toLocaleTimeString()}
+                </div>
+              </div>
+            ) : (
+              <div className="h-96 bg-gray-800 rounded-lg flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <AlertTriangle className="w-16 h-16 mx-auto mb-4" />
+                  <p className="text-lg font-medium mb-2">Camera Offline</p>
+                  <p className="text-sm">Unable to connect to camera feed</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
