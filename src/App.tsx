@@ -807,9 +807,9 @@ function App() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map View */}
-        <div className="col-span-5">
+        <div className="lg:col-span-2">
           <MapView 
             selectedIntersection={selectedIntersection}
             onIntersectionSelect={handleIntersectionSelect}
@@ -817,21 +817,21 @@ function App() {
         </div>
 
         {/* Camera List */}
-        <div className="col-span-3">
+        <div className="lg:col-span-1">
           <CameraList 
             selectedIntersection={selectedIntersection}
             selectedCamera={selectedCamera}
             onCameraSelect={handleCameraSelect}
           />
         </div>
+      </div>
 
-        {/* Camera Feed */}
-        <div className="col-span-4">
-          <CameraFeed 
-            selectedIntersection={selectedIntersection}
-            selectedCamera={selectedCamera}
-          />
-        </div>
+      {/* Camera Feed - Full Width */}
+      <div className="w-full">
+        <CameraFeed 
+          selectedIntersection={selectedIntersection}
+          selectedCamera={selectedCamera}
+        />
       </div>
     </div>
   );
