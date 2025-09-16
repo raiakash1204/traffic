@@ -22,12 +22,14 @@ interface CameraListProps {
   selectedIntersection: Intersection | null;
   selectedCamera: Camera | null;
   onCameraSelect: (camera: Camera) => void;
+  isDarkMode?: boolean;
 }
 
 export const CameraList: React.FC<CameraListProps> = ({ 
   selectedIntersection, 
   selectedCamera, 
-  onCameraSelect 
+  onCameraSelect,
+  isDarkMode = true
 }) => {
   const getCameraIcon = (type: string) => {
     switch (type) {
@@ -49,8 +51,8 @@ export const CameraList: React.FC<CameraListProps> = ({
 
   if (!selectedIntersection) {
     return (
-      <div className="bg-gray-900 rounded-lg p-6 h-full flex items-center justify-center">
-        <div className="text-center text-gray-400">
+      <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white border border-gray-200'} rounded-lg p-6 h-full flex items-center justify-center`}>
+        <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
           <Camera className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg font-medium mb-2">No Intersection Selected</p>
           <p className="text-sm">Click on an intersection on the map to view its cameras</p>
@@ -60,13 +62,13 @@ export const CameraList: React.FC<CameraListProps> = ({
   }
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6 h-full">
+    <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white border border-gray-200'} rounded-lg p-6 h-full`}>
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-white mb-2">
+        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
           {selectedIntersection.name}
         </h3>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-400">
+          <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
             {selectedIntersection.cameras.length} cameras available
           </span>
           <div className="flex items-center">
@@ -97,13 +99,15 @@ export const CameraList: React.FC<CameraListProps> = ({
               className={`w-full p-4 rounded-lg border transition-all duration-200 text-left ${
                 isSelected 
                   ? 'border-blue-500 bg-blue-500/10' 
-                  : 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-750'
+                  : isDarkMode 
+                    ? 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-750'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
                   <IconComponent className={`w-5 h-5 mr-3 ${getCameraTypeColor(camera.type)}`} />
-                  <span className="text-white font-medium">{camera.name}</span>
+                  <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{camera.name}</span>
                 </div>
                 <div className="flex items-center">
                   {isOnline ? (
@@ -116,7 +120,7 @@ export const CameraList: React.FC<CameraListProps> = ({
               
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-400">
+                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
                     {camera.angle} • {camera.type}
                   </span>
                 </div>
@@ -134,7 +138,7 @@ export const CameraList: React.FC<CameraListProps> = ({
       </div>
 
       {selectedIntersection.cameras.length === 0 && (
-        <div className="text-center text-gray-400 mt-8">
+        <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-8`}>
           <Camera className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No cameras installed at this intersection</p>
         </div>
