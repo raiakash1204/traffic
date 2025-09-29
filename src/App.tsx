@@ -524,117 +524,26 @@ function App() {
       </div>
       
       <div className={`relative ${isDarkMode ? 'bg-slate-900' : 'bg-gray-100'} rounded-lg overflow-hidden`} style={{ height: '400px' }}>
-        <svg width="100%" height="100%" viewBox="0 0 640 400" className="absolute inset-0">
-          {/* City Background */}
-          <rect width="640" height="400" fill={isDarkMode ? "#0F172A" : "#F3F4F6"} />
-          
-          {/* City Blocks */}
-          <rect x="50" y="50" width="120" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="200" y="50" width="100" height="60" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="330" y="40" width="140" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="500" y="60" width="90" height="70" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          
-          <rect x="60" y="160" width="90" height="100" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="180" y="180" width="110" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="320" y="160" width="130" height="110" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="480" y="170" width="100" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          
-          <rect x="70" y="290" width="100" height="80" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="200" y="300" width="120" height="70" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="350" y="290" width="110" height="85" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          <rect x="490" y="280" width="120" height="90" fill={isDarkMode ? "#1E293B" : "#E5E7EB"} stroke={isDarkMode ? "#334155" : "#9CA3AF"} strokeWidth="1" />
-          
-          {/* Major Roads */}
-          <line x1="0" y1="140" x2="640" y2="140" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
-          <line x1="0" y1="280" x2="640" y2="280" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
-          <line x1="180" y1="0" x2="180" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
-          <line x1="320" y1="0" x2="320" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
-          <line x1="480" y1="0" x2="480" y2="400" stroke={isDarkMode ? "#475569" : "#6B7280"} strokeWidth="8" />
-          
-          {/* Secondary Roads */}
-          <line x1="0" y1="220" x2="640" y2="220" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
-          <line x1="380" y1="0" x2="380" y2="400" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
-          <line x1="520" y1="0" x2="520" y2="400" stroke={isDarkMode ? "#64748B" : "#9CA3AF"} strokeWidth="4" />
-          
-          {/* Highway */}
-          <line x1="0" y1="120" x2="640" y2="120" stroke="#3B82F6" strokeWidth="6" />
-          
-          {/* Intersections */}
-          {Object.entries(trafficData.intersections).map(([key, intersection]) => (
-            <g key={key}>
-              <circle
-                cx={intersection.coordinates.x}
-                cy={intersection.coordinates.y}
-                r="12"
-                fill={getIntersectionStatusColor(intersection.status)}
-                stroke={isDarkMode ? "#1E293B" : "#FFFFFF"}
-                strokeWidth="2"
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => setSelectedIntersection(key)}
-              />
-              <circle
-                cx={intersection.coordinates.x}
-                cy={intersection.coordinates.y}
-                r="4"
-                fill="white"
-                className="pointer-events-none"
-              />
-              <text
-                x={intersection.coordinates.x}
-                y={intersection.coordinates.y - 20}
-                textAnchor="middle"
-                fill={isDarkMode ? "#E2E8F0" : "#374151"}
-                fontSize="10"
-                fontFamily="Inter"
-                className="pointer-events-none"
-              >
-                {intersection.id}
-              </text>
-            </g>
-          ))}
-          
-          {/* Traffic Flow Indicators */}
-          <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-             refX="0" refY="3.5" orient="auto">
-              <polygon points="0 0, 10 3.5, 0 7" fill="#10B981" />
-            </marker>
-          </defs>
-          
-          {/* Flow arrows on major roads */}
-          <line x1="50" y1="135" x2="80" y2="135" stroke="#10B981" strokeWidth="2" markerEnd="url(#arrowhead)" />
-          <line x1="250" y1="145" x2="280" y2="145" stroke="#10B981" strokeWidth="2" markerEnd="url(#arrowhead)" />
-          <line x1="400" y1="135" x2="430" y2="135" stroke="#10B981" strokeWidth="2" markerEnd="url(#arrowhead)" />
-          
-          <line x1="185" y1="50" x2="185" y2="80" stroke="#10B981" strokeWidth="2" markerEnd="url(#arrowhead)" />
-          <line x1="325" y1="200" x2="325" y2="230" stroke="#10B981" strokeWidth="2" markerEnd="url(#arrowhead)" />
-        </svg>
-        
-        {showIntersectionDetails && selectedIntersection && (
-          <div className={`absolute top-4 right-4 ${isDarkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-gray-300'} border rounded-lg p-4 max-w-xs`}>
-            <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
-              {trafficData.intersections[selectedIntersection]?.name}
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Status:</span>
-                <span className={`font-medium ${
-                  trafficData.intersections[selectedIntersection]?.status === 'optimal' ? 'text-emerald-400' :
-                  trafficData.intersections[selectedIntersection]?.status === 'congested' ? 'text-amber-400' :
-                  'text-red-400'
-                }`}>
-                  {trafficData.intersections[selectedIntersection]?.status}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>AI Optimization:</span>
-                <span className="text-blue-400 font-medium">
-                  {trafficData.intersections[selectedIntersection]?.aiOptimization}%
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        <img src="/img.png" alt="City Traffic Network" className="absolute inset-0 w-full h-full object-cover" />
+        {Object.entries(trafficData.intersections).map(([key, intersection]) => {
+          const leftPercent = (intersection.coordinates.x / 640) * 100;
+          const topPercent = (intersection.coordinates.y / 400) * 100;
+          return (
+            <button
+              key={key}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${leftPercent}%`, top: `${topPercent}%` }}
+              onClick={() => setSelectedIntersection(key as any)}
+              title={intersection.name}
+            >
+              <span className={`block w-4 h-4 rounded-full ring-2 ${
+                intersection.status === 'optimal' ? 'bg-emerald-500 ring-white' :
+                intersection.status === 'congested' ? 'bg-amber-500 ring-white' :
+                'bg-red-500 ring-white'
+              }`} />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
