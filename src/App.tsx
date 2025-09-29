@@ -18,9 +18,12 @@ import {
   Zap,
   Sun,
   Moon
-} from 'lucide-react';
+import { BarChart3, Camera, Settings, Activity, Sun, Moon, LogOut } from 'lucide-react';
+import { LoginPage } from './components/LoginPage';
 import { MapView } from './components/MapView';
+import { RealMapView } from './components/RealMapView';
 import { CameraList } from './components/CameraList';
+import { CityMapView } from './components/CityMapView';
 import { CameraFeed } from './components/CameraFeed';
 
 // Chart.js types
@@ -83,10 +86,24 @@ interface TrafficData {
 type PageType = 'dashboard' | 'cameras' | 'analytics' | 'controls';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [selectedIntersection, setSelectedIntersection] = useState<Intersection | null>(null);
+  const handleLogin = (success: boolean) => {
+    setIsAuthenticated(success);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setActiveTab('dashboard');
+  };
+
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} isDarkMode={isDarkMode} />;
+  }
+
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [aiEnabled, setAiEnabled] = useState(true);
   const [showAiAlert, setShowAiAlert] = useState(false);
@@ -451,6 +468,17 @@ function App() {
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+            <button
+              onClick={handleLogout}
+              className={`p-2 rounded-lg transition-colors ${
+                isDarkMode 
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
             
             <div className="flex items-center space-x-3 mr-4">
               <div className={`w-2 h-2 rounded-full ${getStatusColor(trafficData.systemStatus)}`}></div>
@@ -717,13 +745,9 @@ function App() {
         </div>
         
         <div className="space-y-6">
-          {/* Live Intersection Details */}
-          <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-              Intersection Details
-            </h3>
-            {selectedIntersection && trafficData.intersections[selectedIntersection] && (
-              <div className="space-y-4">
+                <div className="lg:col-span-2">
+                  <RealMapView 
+                </div>
                 <div>
                   <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm mb-2`}>
                     {trafficData.intersections[selectedIntersection].name}
